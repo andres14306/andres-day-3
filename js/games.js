@@ -470,9 +470,135 @@ function initCookieClicker(containerId) {
   render();
 }
 
+// =============================
+// GAME 4: BEER PONG (Dartmouth Edition)
+// =============================
+function initPongGame(containerId) {
+  const container = document.getElementById(containerId);
+  if (!container) return;
+
+  const scoreEl = document.getElementById(containerId + '-score');
+  const startBtn = document.getElementById(containerId + '-start');
+  const cupsEl = document.getElementById(containerId + '-cups');
+  const msgEl = document.getElementById(containerId + '-msg');
+
+  // Cup layout: triangle formation (1-2-3 rows)
+  let cups = [];
+  let throws = 0;
+  let sunk = 0;
+
+  const hitMessages = [
+    'SPLASH! Nothing but cup!',
+    'SUNK IT! Dartmouth trained!',
+    'WET! The crowd goes wild!',
+    'MONEY SHOT! Pong legend!',
+    'DRIP! That Ivy League aim!',
+    'CLEAN! DJ Andres sinks another!',
+  ];
+
+  const missMessages = [
+    'Rimmed out! The table is slippery...',
+    'Airball! Were you even looking?',
+    'Bounce off the rim! So close!',
+    'Whiff! Stick to Salesforce.',
+    'Miss! Environmental studies didn\'t prepare you.',
+    'Wide right! Maybe try Zapier instead.',
+  ];
+
+  const winMessages = [
+    'ALL CUPS SUNK! DARTMOUTH PONG CHAMPION!',
+    'CLEARED THE TABLE! You ARE the Big Green!',
+    'PERFECT GAME! Wharton party legend!',
+  ];
+
+  function renderCups() {
+    const rows = [1, 2, 3];
+    let cupIdx = 0;
+    cupsEl.innerHTML = '';
+
+    rows.forEach(count => {
+      const rowDiv = document.createElement('div');
+      rowDiv.style.cssText = 'display: flex; justify-content: center; gap: 8px; margin-bottom: 6px;';
+
+      for (let i = 0; i < count; i++) {
+        const cup = document.createElement('div');
+        const idx = cupIdx;
+        cup.style.cssText = `
+          width: 50px; height: 55px; font-size: 36px; text-align: center; line-height: 55px;
+          transition: all 0.3s ease; cursor: default;
+          ${cups[idx] ? 'opacity: 0.15; transform: scale(0.7);' : 'filter: drop-shadow(0 0 8px rgba(0, 204, 102, 0.5));'}
+        `;
+        cup.textContent = cups[idx] ? '\u274C' : '\uD83C\uDF7A';
+        cupsEl.appendChild(cup);
+        rowDiv.appendChild(cup);
+        cupIdx++;
+      }
+      cupsEl.appendChild(rowDiv);
+    });
+  }
+
+  function resetGame() {
+    cups = [false, false, false, false, false, false];
+    throws = 0;
+    sunk = 0;
+    renderCups();
+    if (scoreEl) scoreEl.textContent = 'Sink all 6 cups!';
+    if (msgEl) msgEl.textContent = '';
+    if (startBtn) startBtn.textContent = '\uD83C\uDF7B THROW';
+  }
+
+  function throwBall() {
+    if (sunk >= 6) {
+      resetGame();
+      return;
+    }
+
+    throws++;
+
+    // Find remaining cups
+    const remaining = cups.map((c, i) => c ? -1 : i).filter(i => i >= 0);
+    if (remaining.length === 0) return;
+
+    // Hit chance: 45% base, gets slightly better as you warm up
+    const hitChance = 0.45 + (sunk * 0.03);
+    const isHit = Math.random() < hitChance;
+
+    if (isHit) {
+      // Sink a random remaining cup
+      const target = remaining[Math.floor(Math.random() * remaining.length)];
+      cups[target] = true;
+      sunk++;
+
+      if (msgEl) msgEl.innerHTML = '<span style="color: var(--neon-green);">' +
+        hitMessages[Math.floor(Math.random() * hitMessages.length)] + '</span>';
+
+      if (sunk >= 6) {
+        if (scoreEl) scoreEl.textContent = winMessages[Math.floor(Math.random() * winMessages.length)];
+        if (startBtn) startBtn.textContent = '\uD83C\uDF7B PLAY AGAIN';
+        if (msgEl) msgEl.innerHTML += '<br><span style="color: var(--neon-yellow);">' + throws + ' throws. Dartmouth would be proud.</span>';
+      } else {
+        if (scoreEl) scoreEl.textContent = 'Sunk: ' + sunk + '/6 | Throws: ' + throws;
+      }
+    } else {
+      if (msgEl) msgEl.innerHTML = '<span style="color: var(--cyber-red);">' +
+        missMessages[Math.floor(Math.random() * missMessages.length)] + '</span>';
+      if (scoreEl) scoreEl.textContent = 'Sunk: ' + sunk + '/6 | Throws: ' + throws;
+    }
+
+    renderCups();
+  }
+
+  if (startBtn) {
+    startBtn.addEventListener('click', throwBall);
+  }
+
+  resetGame();
+}
+
 // Init games when DOM ready
 document.addEventListener('DOMContentLoaded', () => {
   initSnakeGame('snake-canvas');
   initWhackGame('whack-game');
   initCookieClicker('cookie-game');
+  initPongGame('pong-game');
 });
