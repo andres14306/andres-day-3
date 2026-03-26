@@ -179,10 +179,47 @@ function initDiscoBackground() {
   });
 }
 
+// === SCROLL "OBSESSED" POPUP ===
+function initScrollPopup() {
+  const popup = document.createElement('div');
+  popup.className = 'scroll-popup';
+  popup.innerHTML = `
+    <span class="scroll-popup-emoji">💅</span>
+    <div class="scroll-popup-text">why are you so<br>obsessed with me</div>
+    <button class="scroll-popup-close" onclick="this.parentElement.classList.remove('visible')">I can't help it</button>
+  `;
+  document.body.appendChild(popup);
+
+  let hasShown = false;
+  let scrollTimeout = null;
+
+  window.addEventListener('scroll', () => {
+    if (hasShown) return;
+
+    // Show after scrolling past 40% of the page
+    const scrollPct = window.scrollY / (document.body.scrollHeight - window.innerHeight);
+    if (scrollPct > 0.4) {
+      // Small delay so it feels reactive, not instant
+      if (!scrollTimeout) {
+        scrollTimeout = setTimeout(() => {
+          popup.classList.add('visible');
+          hasShown = true;
+
+          // Auto-dismiss after 5 seconds
+          setTimeout(() => {
+            popup.classList.remove('visible');
+          }, 5000);
+        }, 300);
+      }
+    }
+  });
+}
+
 // === INIT ALL EFFECTS ===
 document.addEventListener('DOMContentLoaded', () => {
   initEyes();
   initVisitorCounter();
   initDancingLetters();
   initDiscoBackground();
+  initScrollPopup();
 });
