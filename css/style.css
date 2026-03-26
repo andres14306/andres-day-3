@@ -46,32 +46,34 @@ body {
   image-rendering: pixelated;
 }
 
-/* === ANIMATED TILED BACKGROUND === */
+/* === DISCO TILED BACKGROUND === */
 .bg-tiled {
-  background-color: #000033;
+  background-color: #0a0014;
   background-image:
     repeating-linear-gradient(
       0deg,
       transparent,
       transparent 50px,
-      rgba(255, 0, 255, 0.03) 50px,
-      rgba(255, 0, 255, 0.03) 51px
+      rgba(255, 0, 255, 0.06) 50px,
+      rgba(255, 0, 255, 0.06) 51px
     ),
     repeating-linear-gradient(
       90deg,
       transparent,
       transparent 50px,
-      rgba(0, 255, 255, 0.03) 50px,
-      rgba(0, 255, 255, 0.03) 51px
-    ),
-    url("data:image/svg+xml,%3Csvg width='60' height='60' xmlns='http://www.w3.org/2000/svg'%3E%3Ctext x='10' y='30' font-size='20' opacity='0.15'%3E%E2%9C%A8%3C/text%3E%3Ctext x='40' y='55' font-size='14' opacity='0.1'%3E%E2%AD%90%3C/text%3E%3C/svg%3E");
-  background-size: 51px 51px, 51px 51px, 60px 60px;
-  animation: bg-scroll 20s linear infinite;
+      rgba(0, 255, 255, 0.06) 50px,
+      rgba(0, 255, 255, 0.06) 51px
+    );
+  background-size: 51px 51px;
+  animation: disco-bg 8s ease-in-out infinite;
 }
 
-@keyframes bg-scroll {
-  0% { background-position: 0 0, 0 0, 0 0; }
-  100% { background-position: 0 200px, 200px 0, 60px 60px; }
+@keyframes disco-bg {
+  0% { background-color: #0a0014; }
+  25% { background-color: #0a001e; }
+  50% { background-color: #14000a; }
+  75% { background-color: #000a1e; }
+  100% { background-color: #0a0014; }
 }
 
 /* === BLINK TAG IS BACK BABY === */
@@ -339,76 +341,6 @@ body {
 }
 
 .guestbook-form button:active {
-  border: 2px inset #808080;
-}
-
-/* === FAKE POPUP === */
-.fake-popup {
-  position: fixed;
-  background: #c0c0c0;
-  border: 2px outset #ffffff;
-  box-shadow: 4px 4px 0 rgba(0,0,0,0.4);
-  z-index: 9999;
-  min-width: 320px;
-  max-width: 400px;
-  font-family: 'Tahoma', 'Arial', sans-serif;
-  font-size: 13px;
-  display: none;
-}
-
-.fake-popup.active {
-  display: block;
-}
-
-.fake-popup-titlebar {
-  background: linear-gradient(180deg, #0054e3, #0047cc);
-  color: white;
-  padding: 3px 6px;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  font-weight: bold;
-  font-size: 12px;
-}
-
-.fake-popup-titlebar .close-btn {
-  background: #c0c0c0;
-  border: 1px outset #fff;
-  width: 18px;
-  height: 18px;
-  text-align: center;
-  line-height: 16px;
-  cursor: pointer;
-  font-size: 11px;
-  color: #000;
-}
-
-.fake-popup-body {
-  padding: 20px;
-  text-align: center;
-  color: #000;
-  background: #ece9d8;
-}
-
-.fake-popup-body p {
-  margin-bottom: 10px;
-}
-
-.fake-popup-body .popup-icon {
-  font-size: 40px;
-  margin-bottom: 10px;
-}
-
-.fake-popup-body button {
-  background: #ece9d8;
-  border: 2px outset #fff;
-  padding: 4px 20px;
-  margin: 4px;
-  cursor: pointer;
-  font-size: 12px;
-}
-
-.fake-popup-body button:active {
   border: 2px inset #808080;
 }
 
@@ -932,7 +864,7 @@ a:visited {
   100% { text-shadow: 0 -3px 7px #ff0, 0 -6px 12px #ff8000, 0 -8px 17px #ff0000, 0 -10px 22px #ff0000; }
 }
 
-/* === MATRIX RAIN CANVAS === */
+/* === DISCO BACKGROUND CANVAS === */
 #matrix-canvas {
   position: fixed;
   top: 0;
@@ -940,7 +872,7 @@ a:visited {
   width: 100%;
   height: 100%;
   z-index: -1;
-  opacity: 0.15;
+  opacity: 0.4;
   pointer-events: none;
 }
 

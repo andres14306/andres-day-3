@@ -82,75 +82,6 @@ function initEyes() {
   });
 }
 
-// === FAKE POPUP SYSTEM ===
-const popupMessages = [
-  { title: 'CONGRATULATIONS!!!', icon: '🎉', message: 'You are the 1,000,000th visitor to this page!!!', buttons: ['Claim Prize', 'Claim BIGGER Prize'] },
-  { title: 'Warning', icon: '⚠️', message: 'Your computer has been infected with TOO MUCH SWAG', buttons: ['OK', 'More Swag Please'] },
-  { title: 'System Alert', icon: '🤖', message: 'AI has detected that you are AWESOME. No action needed.', buttons: ['I Know', 'Tell Me More'] },
-  { title: 'Hot Singles Alert', icon: '🔥', message: 'Hot GTM Engineers in your area want to optimize your funnel!', buttons: ['Optimize Now', 'My Funnel Is Fine'] },
-  { title: 'Clippy Says:', icon: '📎', message: 'It looks like you\'re trying to browse a website. Would you like help with that?', buttons: ['Yes Please', 'Go Away Clippy'] },
-  { title: 'Free Download!!!', icon: '💿', message: 'Download more RAM for FREE! (only 420 easy payments of $0.01)', buttons: ['DOWNLOAD', 'I Need More RAM'] },
-  { title: 'Security Warning', icon: '🛡️', message: 'This website is protected by WEB 1.0 SECURITY STANDARDS (aka nothing)', buttons: ['Cool', 'I Feel Safe'] },
-];
-
-let popupCount = 0;
-const MAX_POPUPS = 3;
-
-function showFakePopup() {
-  if (popupCount >= MAX_POPUPS) return;
-
-  const msg = popupMessages[Math.floor(Math.random() * popupMessages.length)];
-  const popup = document.createElement('div');
-  popup.className = 'fake-popup active';
-  popup.style.top = (50 + Math.random() * 300) + 'px';
-  popup.style.left = (50 + Math.random() * (window.innerWidth - 450)) + 'px';
-
-  popup.innerHTML = `
-    <div class="fake-popup-titlebar">
-      <span>${msg.title}</span>
-      <span class="close-btn" onclick="this.closest('.fake-popup').remove(); popupCount--;">X</span>
-    </div>
-    <div class="fake-popup-body">
-      <div class="popup-icon">${msg.icon}</div>
-      <p>${msg.message}</p>
-      ${msg.buttons.map(b => `<button onclick="this.closest('.fake-popup').remove(); popupCount--; showFakePopup();">${b}</button>`).join(' ')}
-    </div>
-  `;
-
-  document.body.appendChild(popup);
-  popupCount++;
-
-  // Make it draggable
-  makeDraggable(popup);
-}
-
-function makeDraggable(el) {
-  const titlebar = el.querySelector('.fake-popup-titlebar');
-  let offsetX, offsetY, isDragging = false;
-
-  titlebar.addEventListener('mousedown', (e) => {
-    isDragging = true;
-    offsetX = e.clientX - el.offsetLeft;
-    offsetY = e.clientY - el.offsetTop;
-    el.style.zIndex = 10000 + popupCount;
-  });
-
-  document.addEventListener('mousemove', (e) => {
-    if (!isDragging) return;
-    el.style.left = (e.clientX - offsetX) + 'px';
-    el.style.top = (e.clientY - offsetY) + 'px';
-  });
-
-  document.addEventListener('mouseup', () => {
-    isDragging = false;
-  });
-}
-
-// Show first popup after 5 seconds, then randomly
-setTimeout(showFakePopup, 5000);
-setTimeout(showFakePopup, 15000);
-setTimeout(showFakePopup, 30000);
-
 // === VISITOR COUNTER (FAKE, obviously) ===
 function initVisitorCounter() {
   const counter = document.getElementById('visitor-count');
@@ -190,8 +121,8 @@ function initDancingLetters() {
   });
 }
 
-// === MATRIX RAIN BACKGROUND ===
-function initMatrixRain() {
+// === DISCO BACKGROUND ===
+function initDiscoBackground() {
   const canvas = document.getElementById('matrix-canvas');
   if (!canvas) return;
 
@@ -199,30 +130,48 @@ function initMatrixRain() {
   canvas.width = window.innerWidth;
   canvas.height = window.innerHeight;
 
-  const chars = 'アイウエオカキクケコサシスセソタチツテトCLAYGTM01BOTSCODE';
-  const fontSize = 14;
-  const columns = Math.floor(canvas.width / fontSize);
-  const drops = new Array(columns).fill(1);
+  const discoColors = [
+    '#ff00ff', '#00ffff', '#ffff00', '#ff0066',
+    '#6600ff', '#00ff66', '#ff6600', '#ff0099',
+    '#0099ff', '#99ff00', '#ff3399', '#33ccff'
+  ];
+
+  // Grid of disco tiles
+  const tileSize = 60;
+  let time = 0;
 
   function draw() {
-    ctx.fillStyle = 'rgba(0, 0, 0, 0.05)';
+    time += 0.02;
+    const cols = Math.ceil(canvas.width / tileSize) + 1;
+    const rows = Math.ceil(canvas.height / tileSize) + 1;
+
+    for (let r = 0; r < rows; r++) {
+      for (let c = 0; c < cols; c++) {
+        const wave = Math.sin(c * 0.3 + time) + Math.cos(r * 0.3 + time * 0.7);
+        const brightness = (wave + 2) / 4; // normalize 0-1
+        const colorIdx = Math.floor((c + r + Math.floor(time * 2)) % discoColors.length);
+        const color = discoColors[colorIdx];
+
+        ctx.globalAlpha = 0.15 + brightness * 0.25;
+        ctx.fillStyle = color;
+        ctx.fillRect(c * tileSize, r * tileSize, tileSize - 2, tileSize - 2);
+      }
+    }
+
+    // Disco ball spotlight sweep
+    const spotX = canvas.width / 2 + Math.cos(time * 0.8) * canvas.width * 0.4;
+    const spotY = canvas.height / 3 + Math.sin(time * 0.6) * canvas.height * 0.2;
+    const gradient = ctx.createRadialGradient(spotX, spotY, 0, spotX, spotY, 300);
+    gradient.addColorStop(0, 'rgba(255, 255, 255, 0.15)');
+    gradient.addColorStop(1, 'rgba(255, 255, 255, 0)');
+    ctx.globalAlpha = 1;
+    ctx.fillStyle = gradient;
     ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-    ctx.fillStyle = '#0f0';
-    ctx.font = fontSize + 'px monospace';
-
-    for (let i = 0; i < drops.length; i++) {
-      const char = chars[Math.floor(Math.random() * chars.length)];
-      ctx.fillText(char, i * fontSize, drops[i] * fontSize);
-
-      if (drops[i] * fontSize > canvas.height && Math.random() > 0.975) {
-        drops[i] = 0;
-      }
-      drops[i]++;
-    }
+    requestAnimationFrame(draw);
   }
 
-  setInterval(draw, 50);
+  draw();
 
   window.addEventListener('resize', () => {
     canvas.width = window.innerWidth;
@@ -230,99 +179,10 @@ function initMatrixRain() {
   });
 }
 
-// === KONAMI CODE EASTER EGG ===
-const konamiCode = ['ArrowUp', 'ArrowUp', 'ArrowDown', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'ArrowLeft', 'ArrowRight', 'b', 'a'];
-let konamiIndex = 0;
-
-document.addEventListener('keydown', (e) => {
-  if (e.key === konamiCode[konamiIndex]) {
-    konamiIndex++;
-    if (konamiIndex === konamiCode.length) {
-      konamiIndex = 0;
-      activateKonamiMode();
-    }
-  } else {
-    konamiIndex = 0;
-  }
-});
-
-function activateKonamiMode() {
-  document.body.style.animation = 'spin360 2s linear';
-  setTimeout(() => {
-    document.body.style.animation = '';
-    // Spawn 50 emojis
-    for (let i = 0; i < 50; i++) {
-      setTimeout(createFloatingEmoji, i * 50);
-    }
-    // Show special popup
-    const popup = document.createElement('div');
-    popup.className = 'fake-popup active';
-    popup.style.top = '50%';
-    popup.style.left = '50%';
-    popup.style.transform = 'translate(-50%, -50%)';
-    popup.innerHTML = `
-      <div class="fake-popup-titlebar">
-        <span>SECRET UNLOCKED!!! 🎮</span>
-        <span class="close-btn" onclick="this.closest('.fake-popup').remove();">X</span>
-      </div>
-      <div class="fake-popup-body">
-        <div class="popup-icon">🏆</div>
-        <p style="font-size:16px;"><b>YOU FOUND THE KONAMI CODE!</b><br>You are now a certified 1337 h4x0r</p>
-        <button onclick="this.closest('.fake-popup').remove();">I AM THE CHOSEN ONE</button>
-      </div>
-    `;
-    document.body.appendChild(popup);
-    makeDraggable(popup);
-  }, 2000);
-}
-
-// === RIGHT-CLICK TROLL ===
-document.addEventListener('contextmenu', (e) => {
-  e.preventDefault();
-  const popup = document.createElement('div');
-  popup.className = 'fake-popup active';
-  popup.style.top = e.clientY + 'px';
-  popup.style.left = Math.min(e.clientX, window.innerWidth - 350) + 'px';
-  popup.innerHTML = `
-    <div class="fake-popup-titlebar">
-      <span>Nice Try! 😏</span>
-      <span class="close-btn" onclick="this.closest('.fake-popup').remove();">X</span>
-    </div>
-    <div class="fake-popup-body">
-      <div class="popup-icon">🚫</div>
-      <p>You cannot steal my <b>epic HTML code</b>!<br>This site is protected by <i>Web 1.0 DRM</i>.</p>
-      <button onclick="this.closest('.fake-popup').remove();">I'm Sorry</button>
-    </div>
-  `;
-  document.body.appendChild(popup);
-  makeDraggable(popup);
-});
-
 // === INIT ALL EFFECTS ===
 document.addEventListener('DOMContentLoaded', () => {
   initEyes();
   initVisitorCounter();
   initDancingLetters();
-  initMatrixRain();
-
-  // Start with a welcome "popup"
-  setTimeout(() => {
-    const welcomePopup = document.createElement('div');
-    welcomePopup.className = 'fake-popup active';
-    welcomePopup.style.top = '100px';
-    welcomePopup.style.left = Math.max(50, (window.innerWidth / 2) - 200) + 'px';
-    welcomePopup.innerHTML = `
-      <div class="fake-popup-titlebar">
-        <span>Welcome to the INFORMATION SUPERHIGHWAY!</span>
-        <span class="close-btn" onclick="this.closest('.fake-popup').remove();">X</span>
-      </div>
-      <div class="fake-popup-body">
-        <div class="popup-icon">🌐</div>
-        <p><b>Welcome, traveler!</b><br>You have reached the WORLD WIDE WEB.<br>Please set your resolution to 800x600 for the best experience.</p>
-        <button onclick="this.closest('.fake-popup').remove();">Enter the Cyber Zone</button>
-      </div>
-    `;
-    document.body.appendChild(welcomePopup);
-    makeDraggable(welcomePopup);
-  }, 1500);
+  initDiscoBackground();
 });
